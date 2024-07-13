@@ -1,5 +1,4 @@
 import { useState } from "react";
-import Test from "./test";
 
 export default function Board() {
   const [count, setCount] = useState(0);
