@@ -32,7 +32,6 @@ export default function Board() {
         >
           -
         </button>
-        {/* shesh */}
       </div>
     </div>
   );
