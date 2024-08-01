@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Test from "./test";
+
 
 export default function Board() {
   const [count, setCount] = useState(0);
@@ -15,6 +15,7 @@ export default function Board() {
   return (
     <div>
       <div class="w-48 h-48 text-center text-sky-400/100">
+
         <h2>{count}</h2>
       </div>
       <div className="buttonContainer">

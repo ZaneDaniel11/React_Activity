@@ -5,8 +5,13 @@ export default function Test() {
   function Increase() {
     IncrementB(increment + 1);
   }
+
   function Decrement() {
     IncrementB(increment - 1);
+    if(increment <= 0)
+    {
+      IncrementB(0);
+    }
   }
   return (
     <div>

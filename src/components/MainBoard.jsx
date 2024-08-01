@@ -9,14 +9,14 @@ export default function MainBoard() {
         </div>
         <Board />
       </div>
-
+      <Test />
       <div>
         <div className="header">
           <h1>Team 2</h1>
         </div>
         <Board />
       </div>
-      <Test />
+      
     </div>
   );
 }
