@@ -1,5 +1,5 @@
 import Board from "./Board";
-import Test from "./test";
+
 export default function MainBoard() {
   return (
     <div class="flex">
@@ -16,7 +16,6 @@ export default function MainBoard() {
         </div>
         <Board />
       </div>
-      
     </div>
   );
 }
