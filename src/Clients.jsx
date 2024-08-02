@@ -58,10 +58,6 @@ export default function Client() {
     }
   };
 
-  useEffect(() => {
-    GetClients();
-  }, []);
-
   const handleDeleteUser = async () => {
     if (currentItem && currentItem.id) {
       try {
@@ -75,6 +71,10 @@ export default function Client() {
       }
     }
   };
+
+  useEffect(() => {
+    GetClients();
+  }, []);
 
   return (
     <>
