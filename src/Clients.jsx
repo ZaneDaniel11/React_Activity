@@ -1,21 +1,18 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 export default function Client() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentItem, setCurrentItem] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [AddModalOpen, SetAddOpenModal] = useState(false);
+  const [addModalOpen, setAddOpenModal] = useState(false);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [users, setUsers] = useState({ Name: "", Residency: "" });
 
-  const [users, SetUsers] = useState({ Name: "", Residency: "" });
-
-  async function Addusers(e) {
+  async function addUsers(e) {
     e.preventDefault();
-
     const response = await fetch(
       "http://localhost:5169/api/ClientApi/SaveClient",
-
       {
         method: "POST",
         headers: {
@@ -28,18 +25,48 @@ export default function Client() {
         }),
       }
     );
-    OpenAddModal();
+    openAddModal();
+    getClients();
   }
-  //  function CloseModal() {
-  //   SetAddOpenModal(!AddModalOpen);
-  // }
-  function OpenAddModal() {
-    SetAddOpenModal(!AddModalOpen);
+
+  async function updateUsers(e) {
+    e.preventDefault();
+
+    try {
+      const response = await fetch(
+        `http://localhost:5169/api/ClientApi/UpdateClient?Id=${currentItem.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: currentItem.id,
+            clientName: users.Name,
+            address: users.Residency,
+          }),
+        }
+      );
+
+      getClients();
+      openUpdateModal();
+    } catch (error) {
+      console.error("Failed to update user:", error);
+      alert("Failed to update user. Please try again.");
+    }
+  }
+
+  function openAddModal() {
+    setAddOpenModal(!addModalOpen);
+  }
+
+  function openUpdateModal() {
+    setUpdateModalOpen(!updateModalOpen);
   }
 
   const openDeleteModal = () => setDeleteModalOpen(!deleteModalOpen);
 
-  const GetClients = async () => {
+  const getClients = async () => {
     setLoading(true);
     try {
       const response = await fetch(
@@ -61,10 +88,13 @@ export default function Client() {
   const handleDeleteUser = async () => {
     if (currentItem && currentItem.id) {
       try {
-        await axios.delete(`http://localhost:5169/api/ClientApi/DeleteClient`, {
-          params: { id: currentItem.id },
-        });
-        setClients(clients.filter((client) => client.id !== currentItem.id));
+        const response = await fetch(
+          `http://localhost:5169/api/ClientApi/DeleteClient?id=${currentItem.id}`,
+          {
+            method: "DELETE",
+          }
+        );
+        getClients();
         openDeleteModal();
       } catch (error) {
         console.error("Failed to delete user:", error);
@@ -73,39 +103,57 @@ export default function Client() {
   };
 
   useEffect(() => {
-    GetClients();
+    getClients();
   }, []);
 
   return (
     <>
-      <div>
-        <button onClick={OpenAddModal}>Add</button>
+      <div className="p-4">
+        <button
+          onClick={openAddModal}
+          className="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-4 py-2"
+        >
+          Add
+        </button>
       </div>
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-center">Loading...</p>
       ) : (
-        <table>
-          <tbody>
-            {clients.map((c) => (
-              <tr key={c.id}>
-                <td>{c.clientName}</td>
-                <td>{c.address}</td>
-                <td>
-                  <button
-                    onClick={() => {
-                      setCurrentItem(c);
-                      openDeleteModal();
-                    }}
-                    type="button"
-                    className="text-white bg-red-700 hover:bg-red-800 font-medium rounded-lg text-sm px-3 py-1.5 me-2 mb-2"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <tbody>
+              {clients.map((c) => (
+                <tr key={c.id} className="border-b border-gray-200">
+                  <td className="px-4 py-2">{c.clientName}</td>
+                  <td className="px-4 py-2">{c.address}</td>
+                  <td className="px-4 py-2 flex space-x-2">
+                    <button
+                      onClick={() => {
+                        setCurrentItem(c);
+                        setUsers({ Name: c.clientName, Residency: c.address });
+                        openUpdateModal();
+                      }}
+                      type="button"
+                      className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-3 py-1.5"
+                    >
+                      Update
+                    </button>
+                    <button
+                      onClick={() => {
+                        setCurrentItem(c);
+                        openDeleteModal();
+                      }}
+                      type="button"
+                      className="text-white bg-red-700 hover:bg-red-800 font-medium rounded-lg text-sm px-3 py-1.5"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {deleteModalOpen && (
@@ -140,38 +188,104 @@ export default function Client() {
         </div>
       )}
 
-      {AddModalOpen && (
+      {addModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg max-w-lg w-full mx-4 md:mx-0">
             <div className="flex justify-between items-center">
-              <h5 className="text-lg font-semibold">Add Madafaking users</h5>
+              <h5 className="text-lg font-semibold">Add User</h5>
               <button
                 type="button"
                 className="text-gray-500 hover:text-gray-700"
+                onClick={openAddModal}
               >
                 <i className="fa-solid fa-xmark"></i>
               </button>
             </div>
-            <form action="">
-              <input
-                type="text"
-                onChange={(e) => SetUsers({ ...users, Name: e.target.value })}
-                value={users.Name}
-              />
-              <input
-                type="text"
-                onChange={(e) =>
-                  SetUsers({ ...users, Residency: e.target.value })
-                }
-                value={users.Residency}
-              />
-
-              <button onClick={(e) => Addusers(e)}>Add Users</button>
+            <form>
+              <div className="mt-4">
+                <label className="block text-gray-700">Name</label>
+                <input
+                  type="text"
+                  onChange={(e) => setUsers({ ...users, Name: e.target.value })}
+                  value={users.Name}
+                  className="w-full p-2 border border-gray-300 rounded-lg mt-2"
+                />
+              </div>
+              <div className="mt-4">
+                <label className="block text-gray-700">Residency</label>
+                <input
+                  type="text"
+                  onChange={(e) =>
+                    setUsers({ ...users, Residency: e.target.value })
+                  }
+                  value={users.Residency}
+                  className="w-full p-2 border border-gray-300 rounded-lg mt-2"
+                />
+              </div>
+              <button
+                onClick={(e) => addUsers(e)}
+                className="mt-4 text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-4 py-2"
+              >
+                Add User
+              </button>
             </form>
             <div className="flex justify-end mt-4">
               <button
                 className="text-gray-500 hover:text-gray-700 mr-4"
-                onClick={OpenAddModal}
+                onClick={openAddModal}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {updateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg max-w-lg w-full mx-4 md:mx-0">
+            <div className="flex justify-between items-center">
+              <h5 className="text-lg font-semibold">Update User</h5>
+              <button
+                type="button"
+                className="text-gray-500 hover:text-gray-700"
+                onClick={openUpdateModal}
+              >
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <form>
+              <div className="mt-4">
+                <label className="block text-gray-700">Name</label>
+                <input
+                  type="text"
+                  onChange={(e) => setUsers({ ...users, Name: e.target.value })}
+                  value={users.Name}
+                  className="w-full p-2 border border-gray-300 rounded-lg mt-2"
+                />
+              </div>
+              <div className="mt-4">
+                <label className="block text-gray-700">Residency</label>
+                <input
+                  type="text"
+                  onChange={(e) =>
+                    setUsers({ ...users, Residency: e.target.value })
+                  }
+                  value={users.Residency}
+                  className="w-full p-2 border border-gray-300 rounded-lg mt-2"
+                />
+              </div>
+              <button
+                onClick={(e) => updateUsers(e)}
+                className="mt-4 text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2"
+              >
+                Update User
+              </button>
+            </form>
+            <div className="flex justify-end mt-4">
+              <button
+                className="text-gray-500 hover:text-gray-700 mr-4"
+                onClick={openUpdateModal}
               >
                 Cancel
               </button>
