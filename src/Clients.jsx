@@ -5,35 +5,31 @@ export default function Client() {
   const [loading, setLoading] = useState(true);
   const [currentItem, setCurrentItem] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [addModalOpen, setAddOpenModal] = useState(false);
+  const [addModalOpen, setAddModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [users, setUsers] = useState({ Name: "", Residency: "" });
 
   async function addUsers(e) {
     e.preventDefault();
-    const response = await fetch(
-      "http://localhost:5169/api/ClientApi/SaveClient",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: 0,
-          clientName: users.Name,
-          address: users.Residency,
-        }),
-      }
-    );
+    await fetch("http://localhost:5169/api/ClientApi/SaveClient", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: 0,
+        clientName: users.Name,
+        address: users.Residency,
+      }),
+    });
     openAddModal();
     getClients();
   }
 
   async function updateUsers(e) {
     e.preventDefault();
-
     try {
-      const response = await fetch(
+      await fetch(
         `http://localhost:5169/api/ClientApi/UpdateClient?Id=${currentItem.id}`,
         {
           method: "PUT",
@@ -47,7 +43,6 @@ export default function Client() {
           }),
         }
       );
-
       getClients();
       openUpdateModal();
     } catch (error) {
@@ -57,7 +52,7 @@ export default function Client() {
   }
 
   function openAddModal() {
-    setAddOpenModal(!addModalOpen);
+    setAddModalOpen(!addModalOpen);
   }
 
   function openUpdateModal() {
@@ -75,7 +70,6 @@ export default function Client() {
           method: "GET",
         }
       );
-
       const result = await response.json();
       setClients(result);
     } catch (error) {
@@ -88,7 +82,7 @@ export default function Client() {
   const handleDeleteUser = async () => {
     if (currentItem && currentItem.id) {
       try {
-        const response = await fetch(
+        await fetch(
           `http://localhost:5169/api/ClientApi/DeleteClient?id=${currentItem.id}`,
           {
             method: "DELETE",
@@ -119,14 +113,31 @@ export default function Client() {
       {loading ? (
         <p className="text-center">Loading...</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="flex justify-center overflow-x-auto">
           <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Residency
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
             <tbody>
               {clients.map((c) => (
-                <tr key={c.id} className="border-b border-gray-200">
-                  <td className="px-4 py-2">{c.clientName}</td>
-                  <td className="px-4 py-2">{c.address}</td>
-                  <td className="px-4 py-2 flex space-x-2">
+                <tr key={c.id} className="bg-white border-b hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {c.clientName}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {c.address}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex space-x-2">
                     <button
                       onClick={() => {
                         setCurrentItem(c);
@@ -134,7 +145,7 @@ export default function Client() {
                         openUpdateModal();
                       }}
                       type="button"
-                      className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-3 py-1.5"
+                      className="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-3 py-1.5"
                     >
                       Update
                     </button>
@@ -144,7 +155,7 @@ export default function Client() {
                         openDeleteModal();
                       }}
                       type="button"
-                      className="text-white bg-red-700 hover:bg-red-800 font-medium rounded-lg text-sm px-3 py-1.5"
+                      className="text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-sm px-3 py-1.5"
                     >
                       Delete
                     </button>
@@ -179,7 +190,7 @@ export default function Client() {
               </button>
               <button
                 onClick={handleDeleteUser}
-                className="text-white bg-red-700 hover:bg-red-800 font-medium rounded-lg text-sm px-4 py-2"
+                className="text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-sm px-4 py-2"
               >
                 Delete
               </button>
@@ -277,7 +288,7 @@ export default function Client() {
               </div>
               <button
                 onClick={(e) => updateUsers(e)}
-                className="mt-4 text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-4 py-2"
+                className="mt-4 text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-4 py-2"
               >
                 Update User
               </button>
