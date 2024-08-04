@@ -56,6 +56,7 @@ export default function Client() {
   }
 
   function openAddModal() {
+    setUsers({ Name: "", Residency: "" });
     setAddModalOpen(!addModalOpen);
   }
 
