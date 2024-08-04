@@ -10,8 +10,8 @@ export default function Client() {
   const [users, setUsers] = useState({ Name: "", Residency: "" });
   const [search, setSearch] = useState("");
 
-  const FilterdUsers = clients.filter((clients) =>
-    clients.clientName.toLowerCase().includes(search.toLowerCase())
+  const FilterdUsers = clients.filter((usernames) =>
+    usernames.clientName.toLowerCase().includes(search.toLowerCase())
   );
   async function addUsers(e) {
     e.preventDefault();
