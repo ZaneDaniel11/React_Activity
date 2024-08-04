@@ -8,7 +8,11 @@ export default function Client() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [users, setUsers] = useState({ Name: "", Residency: "" });
+  const [search, setSearch] = useState("");
 
+  const FilterdUsers = clients.filter((clients) =>
+    clients.clientName.toLowerCase().includes(search.toLowerCase())
+  );
   async function addUsers(e) {
     e.preventDefault();
     await fetch("http://localhost:5169/api/ClientApi/SaveClient", {
@@ -109,6 +113,7 @@ export default function Client() {
         >
           Add
         </button>
+        <input value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
       {loading ? (
         <p className="text-center">Loading...</p>
@@ -128,8 +133,9 @@ export default function Client() {
                 </th>
               </tr>
             </thead>
+
             <tbody>
-              {clients.map((c) => (
+              {FilterdUsers.map((c) => (
                 <tr key={c.id} className="bg-white border-b hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {c.clientName}
