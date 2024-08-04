@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import AddModal from "./ClientsModal/AddModal";
-import UpdateModal from "./ClientsModal/UpdateModa";
-import DeleteModal from "./ClientsModal/DeleteModal";
-import "./Client.css";
+import AddModal from "./ClientsComps/AddModal";
+import UpdateModal from "./ClientsComps/UpdateModa";
+import DeleteModal from "./ClientsComps/DeleteModal";
+import ClientTable from "./ClientsComps/Tables/ClientTable";
 
 export default function Client() {
   const [clients, setClients] = useState([]);
@@ -12,11 +12,6 @@ export default function Client() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [users, setUsers] = useState({ Name: "", Residency: "" });
-  const [search, setSearch] = useState("");
-
-  const FilterdUsers = clients.filter((client) =>
-    client.clientName.toLowerCase().includes(search.toLowerCase())
-  );
 
   async function addUsers(e) {
     e.preventDefault();
@@ -61,7 +56,7 @@ export default function Client() {
   }
 
   function openAddModal() {
-    setUsers({ Name: "", Residency: "" });
+    setUsers({ Name: "", Residency: "" }); // Reset input fields
     setAddModalOpen(!addModalOpen);
   }
 
@@ -114,13 +109,6 @@ export default function Client() {
   return (
     <div className="p-6 flex flex-col items-center gap-6">
       <div className="flex justify-between w-full max-w-4xl">
-        <input
-          type="text"
-          onChange={(e) => setSearch(e.target.value)}
-          value={search}
-          placeholder="Search Users"
-          className="px-4 py-2 border rounded-lg w-1/2"
-        />
         <button
           onClick={openAddModal}
           className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
@@ -128,72 +116,14 @@ export default function Client() {
           Add User
         </button>
       </div>
-      <div className="overflow-x-auto w-full max-w-4xl">
-        <table className="min-w-full divide-y divide-gray-200 border">
-          <thead>
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Residency
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td
-                  colSpan="3"
-                  className="px-6 py-4 whitespace-nowrap text-center"
-                >
-                  Loading...
-                </td>
-              </tr>
-            ) : (
-              FilterdUsers.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-100">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {item.clientName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {item.address}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex gap-4">
-                      <button
-                        onClick={() => {
-                          setCurrentItem(item);
-                          setUsers({
-                            Name: item.clientName,
-                            Residency: item.address,
-                          });
-                          openUpdateModal();
-                        }}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-                      >
-                        Update
-                      </button>
-                      <button
-                        onClick={() => {
-                          setCurrentItem(item);
-                          openDeleteModal();
-                        }}
-                        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <ClientTable
+        clients={clients}
+        loading={loading}
+        setCurrentItem={setCurrentItem}
+        openUpdateModal={openUpdateModal}
+        openDeleteModal={openDeleteModal}
+        setUsers={setUsers}
+      />
       <AddModal
         isOpen={addModalOpen}
         toggleModal={openAddModal}
