@@ -131,6 +131,8 @@ export default function Client() {
         isOpen={modals.delete}
         toggleModal={() => toggleModal("delete")}
         handleDeleteUser={handleDeleteUser}
+        setUsers={setUsers}
+        users={users}
       />
     </div>
   );

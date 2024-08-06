@@ -1,7 +1,12 @@
 // DeleteModal.js
 import React from "react";
 
-export default function DeleteModal({ isOpen, toggleModal, handleDeleteUser }) {
+export default function DeleteModal({
+  isOpen,
+  toggleModal,
+  handleDeleteUser,
+  users,
+}) {
   if (!isOpen) return null;
 
   return (
@@ -9,6 +14,7 @@ export default function DeleteModal({ isOpen, toggleModal, handleDeleteUser }) {
       <div className="bg-white p-6 rounded-lg max-w-lg w-full mx-4 md:mx-0">
         <div className="flex justify-between items-center">
           <h5 className="text-lg font-semibold">Delete Confirmation</h5>
+          <input type="text" value={users.id} />
           <button
             type="button"
             onClick={toggleModal}
